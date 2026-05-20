@@ -1,0 +1,1 @@
+/usr/bin/clang++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/bench_lob.dir/benchmarks/bench_lob.cpp.o -o bench_lob  liblob_lib.a /opt/homebrew/lib/libbenchmark.a

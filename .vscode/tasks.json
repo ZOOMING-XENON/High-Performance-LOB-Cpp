@@ -1,0 +1,24 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "CMake: Configure",
+            "type": "shell",
+            "command": "cmake -S ${workspaceFolder} -B ${workspaceFolder}/build -DCMAKE_BUILD_TYPE=Debug -DCMAKE_EXPORT_COMPILE_COMMANDS=ON",
+            "problemMatcher": [],
+            "group": "build",
+            "detail": "初始化 CMake 构建目录（第一次或 CMakeLists.txt 改动后运行）"
+        },
+        {
+            "label": "CMake: Build",
+            "type": "shell",
+            "command": "cmake --build ${workspaceFolder}/build --parallel",
+            "problemMatcher": ["$gcc"],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "detail": "编译全部目标（Cmd+Shift+B）"
+        }
+    ]
+}

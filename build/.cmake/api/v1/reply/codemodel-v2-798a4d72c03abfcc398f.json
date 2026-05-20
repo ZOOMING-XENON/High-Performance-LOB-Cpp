@@ -1,0 +1,96 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "LOB",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "bench_lob::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-bench_lob-660044b22d2f51057c2a.json",
+					"name" : "bench_lob",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "lob_lib::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-lob_lib-1025d62fdf828b73f3ab.json",
+					"name" : "lob_lib",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_matching_engine_stage3::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_matching_engine_stage3-009fc8acf41cfbe23b64.json",
+					"name" : "test_matching_engine_stage3",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_order_book::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_order_book-6a15a931c84664f62195.json",
+					"name" : "test_order_book",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "test_order_book_stage2::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-test_order_book_stage2-1629931931ed5fc123b9.json",
+					"name" : "test_order_book_stage2",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/Users/zhexi/Desktop/Way2Quant/LOB/build",
+		"source" : "/Users/zhexi/Desktop/Way2Quant/LOB"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 8
+	}
+}

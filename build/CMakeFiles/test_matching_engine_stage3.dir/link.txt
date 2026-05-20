@@ -1,0 +1,1 @@
+/usr/bin/clang++  -arch arm64 -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/test_matching_engine_stage3.dir/tests/test_matching_engine_stage3.cpp.o -o test_matching_engine_stage3  liblob_lib.a
