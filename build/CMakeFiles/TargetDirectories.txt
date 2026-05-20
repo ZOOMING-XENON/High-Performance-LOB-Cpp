@@ -1,7 +1,0 @@
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/lob_lib.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/test_matching_engine_stage3.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/test_order_book.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/test_order_book_stage2.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/bench_lob.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/edit_cache.dir
-/Users/zhexi/Desktop/Way2Quant/LOB/build/CMakeFiles/rebuild_cache.dir

@@ -1,0 +1,4 @@
+build/
+.vscode/
+*.png
+cmake_cheatsheet.md
