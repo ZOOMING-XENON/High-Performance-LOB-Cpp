@@ -1,6 +1,5 @@
+以下是我从一个量化领域初学者的视角，借助opus4.7构建的指导书，目标是入门量化的核心部分LOB。 读者可以进行参考，将src里的文件自己跟着指导书重新编写，也可以提出质疑与建议，毕竟我也是小小白。 本人目前已经学习到了第六章，文档将不断更新...
 # C++ 限价订单簿完整项目指导书
-
----
 
 ## 第一章：金融市场基础与 LOB 的本质
 
@@ -1114,7 +1113,7 @@ cmake --build build -j
                   --benchmark_report_aggregates_only=true
 ```
 
-`--benchmark_repetitions=5` 是给量化简历加分的关键：单次跑只能给出一个数字，5 次跑能给出 `mean / median / stddev / coefficient of variation`，**面试时被问"你怎么知道这个数字稳定？"，可以直接回答 CV < 1%**。
+
 
 #### 2. 实测数据（Apple M2，clang 17，C++17，-O3 Release）
 
@@ -1146,10 +1145,9 @@ BM_Execute_cv                      0.33 %          0.38 %             5
 
 #### 3. 如何从这组数字里"读"出三层数据结构的设计正确性
 
-这一步是把简历从"我跑了 benchmark"提升到"我懂这些数字意味着什么"的关键，面试官 90% 会顺着这里追问：
 
 1. **Cancel Order 在 1 K → 10 K → 100 K 三档下分别只是 80.8 / 81.4 / 83.6 ns，差异 < 3 ns**。
-   订单簿规模翻 100 倍，撤单延迟几乎不变——这就是「`unordered_map<OrderID, OrderLocation>` 缓存了 `std::list::iterator`」带来的 **O(1) 撤单**的最佳证据。如果是 O(log n)，100K 相比 1K 应该慢约 `log₂(100)/log₂(1) ≈ 7` 倍才对。这一条单独拎出来，胜过任何嘴上声明的复杂度。
+   订单簿规模翻 100 倍，撤单延迟几乎不变——这就是「`unordered_map<OrderID, OrderLocation>` 缓存了 `std::list::iterator`」带来的 **O(1) 撤单**的最佳证据。如果是 O(log n)，100K 相比 1K 应该慢约 `log₂(100)/log₂(1) ≈ 7` 倍才对。
 
 2. **Add Order 的 CV 偏高（16%）而 Cancel/Execute 的 CV < 1%**。
    原因是 add 路径触发了 `bids_.emplace` —— 当遇到新价格时会触发红黑树节点的堆分配（`new RBNode`），堆分配本身就有抖动；而 cancel 路径只是 `unordered_map::find` + `list::erase`，全是已分配内存上的指针操作，所以延迟极其稳定。**这是 7.1 内存池优化要解决的第一个痛点**——把 `std::list` 的节点分配换成 `PoolAllocator`，预期 add CV 会从 16% 降到 1% 量级。
