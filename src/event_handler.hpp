@@ -8,8 +8,17 @@ struct TradeEvent {
     OrderID aggressive_order_id; //主动方：新进来触发撮合的订单
     OrderID passive_order_id;    //被动方：已在订单簿中等待的订单
     Price trade_price; //成交价取被动方的报价
+    Price limit_price;//成交时主动方的报价
     Quantity trade_qty;
     Side aggressive_side;
+    //价格改进可以反应做市策略质量
+    Quantity price_improvement() const {
+        if(aggressive_side==Side::BUY){//主动方是买方
+            return limit_price - trade_price;
+        }else{
+            return trade_price - limit_price;
+        }
+    }
 };
 struct OrderEvent {
     OrderID order_id;

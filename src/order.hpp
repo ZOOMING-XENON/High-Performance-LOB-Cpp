@@ -7,6 +7,9 @@ struct Order {
     Price price;
     Quantity quantity;
     Quantity remaining_qty;
+    //Iceberg Orders
+    Quantity peak_qty   = 0; //可见峰量，0表示普通订单
+    Quantity hidden_qty = 0; //当前剩余隐藏量
     Side side;
     OrderType type;
     Timestamp timestamp;
@@ -17,6 +20,14 @@ struct Order {
     Immediate（立即）：订单提交后，系统立刻尝试以指定价格撮合成交
     Or-Cancel（或取消）：撮合完成后，若订单还有剩余未成交数量，立即丢弃，不进入订单簿排队等待
     */
+    bool is_iceberg() const {return peak_qty > 0 ;}
+    bool is_post_only = false;//Post_Only订单，只做Maker不做Taker
+    Quantity replenish_peak() {
+        Quantity new_peak = std::min(peak_qty,hidden_qty);
+        remaining_qty = new_peak;
+        hidden_qty -= new_peak;
+        return new_peak;
+    }
 
     Order(OrderID id, Price price , Quantity qty,  Quantity remaining_qty, Side side,OrderType type, Timestamp ts):
         id(id),

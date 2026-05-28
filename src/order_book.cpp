@@ -1,5 +1,13 @@
 #include "order_book.hpp"
 #include<iostream>
+Price OrderBook::best_bid()const{
+    if (bids_.empty()) return 0;
+    return bids_.begin()->first;
+}
+Price OrderBook::best_ask()const{
+    if (asks_.empty()) return INVALID_PRICE;
+    return asks_.begin()->first;
+}
 void OrderBook::add_order(const Order& order) {
     // tutorial 4.2 的代码写在这里
     //重要复习点

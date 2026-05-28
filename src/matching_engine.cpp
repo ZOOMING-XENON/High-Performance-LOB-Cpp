@@ -16,15 +16,34 @@ void MatchingEngine::match_buy_order(Order& order) {
             Price trade_price = passive.price;
             Quantity fill_qty = std::min(order.remaining_qty,passive.remaining_qty);
             //fill_qty:本次撮合实际成交的数量（filled quantity，已成交量）
-            on_trade_({order.id,passive.id,trade_price,fill_qty,Side::BUY});//记录一下交易的两笔订单状态
+            on_trade_({order.id,passive.id,trade_price,order.price,fill_qty,Side::BUY});//记录一下交易的两笔订单状态
+            /*
+            OrderID aggressive_order_id; //主动方：新进来触发撮合的订单
+            OrderID passive_order_id;    //被动方：已在订单簿中等待的订单
+            Price trade_price; //成交价取被动方的报价
+            Price limit_price;//成交时主动方的报价
+            Quantity trade_qty;
+            Side aggressive_side;
+            */
             order.remaining_qty -= fill_qty;
             passive.remaining_qty -= fill_qty;
             level.total_qty -= fill_qty;
 
             if(passive.remaining_qty ==0 ){//正常交易完，没有滑点
-                OrderID passive_id = passive.id;
-                book_.cancel_order(passive_id);
-                break;
+                //如果当前簿里面挂的单是冰山订单
+                if (passive.is_iceberg()&&passive.hidden_qty > 0){
+                    //补充下一峰
+                    Quantity new_peak = passive.replenish_peak();
+                    level.total_qty += new_peak;
+                    //将队首节点移动到队尾
+                    level.orders.splice(level.orders.end(),level.orders,level.orders.begin());
+                    
+                }else{
+                    OrderID passive_id = passive.id;
+                    book_.cancel_order(passive_id);
+                    break;
+                }
+                
             }
         }
     }
@@ -48,15 +67,26 @@ void MatchingEngine::match_sell_order(Order& order) {
             Price trade_price = passive.price;
             Quantity fill_qty = std::min(order.remaining_qty,passive.remaining_qty);
 
-            on_trade_({order.id,passive.id,trade_price,fill_qty,Side::SELL});//记录一下交易的两笔订单状态
+            on_trade_({order.id,passive.id,trade_price,order.price,fill_qty,Side::SELL});//记录一下交易的两笔订单状态
             order.remaining_qty -= fill_qty;
             passive.remaining_qty -= fill_qty;
             level.total_qty -= fill_qty;
 
             if(passive.remaining_qty ==0 ){//正常交易完，没有滑点
-                OrderID passive_id = passive.id;
-                book_.cancel_order(passive_id);
-                break;
+                //如果当前簿里面挂的单是冰山订单
+                if (passive.is_iceberg()&&passive.hidden_qty > 0){
+                    //补充下一峰
+                    Quantity new_peak = passive.replenish_peak();
+                    level.total_qty += new_peak;
+                    //将队首节点移动到队尾
+                    level.orders.splice(level.orders.end(),level.orders,level.orders.begin());
+                    
+                }else{
+                    OrderID passive_id = passive.id;
+                    book_.cancel_order(passive_id);
+                    break;
+                }
+                
             }
         }
     }
@@ -98,6 +128,21 @@ void MatchingEngine::modify_order(OrderID id, Price new_price,Quantity new_qty){
 void MatchingEngine::submit_order(Order order){
     on_order_({order.id, OrderStatus::ACTIVE, 0});//filled_qty暂时为0，还没有成交
     //这里其实就是调用回调函数
+    //Post-only 订单检查：若会直接成taker则直接拒绝
+    if (order.is_post_only){
+        bool would_match = false;
+        if(order.side == Side::BUY && !book_.get_asks().empty()){
+            would_match = (order.price>=book_.best_ask());
+        }
+        if(order.side == Side::SELL && !book_.get_bids().empty()){
+            would_match = (order.price <= book_.best_bid());
+        }
+        if(would_match){
+            on_order_({order.id,OrderStatus::CANCELLED,0});
+            return ;//不撮合，不入簿
+        }
+    }
+    //其他的MARKET，FOK，IOC（普通单）单的处理逻辑
 
     if(order.type == OrderType::MARKET){
         /**市价单:必须按照市场价格全部购买或卖出，
@@ -110,7 +155,7 @@ void MatchingEngine::submit_order(Order order){
     }
     bool is_fok = order.is_fok;
     if(is_fok) {
-        """fill or kill预先检查流动性"""
+        //fill or kill预先检查流动性
         Quantity avail = (order.side == Side::BUY)
                         ? book_.available_qty_for_buy(order.price)
                         : book_.available_qty_for_sell(order.price);

@@ -27,7 +27,7 @@ public:
     void print_depth(int level = 5) const;
     //这里的 const 表示 print_depth 是一个常量成员函数 (const member function)。
     //这个函数向编译器和代码阅读者保证，它不会修改调用它的对象的任何非静态成员变量
-
+   
     Price best_bid() const;
     Price best_ask() const;
     //在函数声明尾部加 const：表示函数内部不会修改类成员的变量：e.g.quantity，side等
